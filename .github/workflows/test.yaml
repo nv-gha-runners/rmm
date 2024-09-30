@@ -1,41 +1,83 @@
 name: test
 
 on:
+  workflow_call:
+    inputs:
+      branch:
+        required: false
+        type: string
+        default: branch-24.10
+      date:
+        required: false
+        type: string
+        default: 2024-09-30
+      sha:
+        required: false
+        type: string
+        default: ab6e2961d7b8f833f688775e941c4e2ed2bd4d8a
   workflow_dispatch:
     inputs:
       branch:
         required: true
         type: string
+        default: branch-24.10
       date:
         required: true
         type: string
+        default: 2024-09-30
       sha:
         required: true
         type: string
+        default: ab6e2961d7b8f833f688775e941c4e2ed2bd4d8a
 
 jobs:
   cpp-tests:
     secrets: inherit
-    uses: rapidsai/shared-workflows/.github/workflows/conda-cpp-tests.yaml@branch-24.12
+    uses: rapidsai/shared-workflows/.github/workflows/conda-cpp-tests.yaml@test-nvks-runners
     with:
       build_type: nightly
       branch: ${{ inputs.branch }}
       date: ${{ inputs.date }}
       sha: ${{ inputs.sha }}
+      matrix_filter: '. |= [
+        {"ARCH":"amd64","PY_VER":"3.10","CUDA_VER":"11.8.0","LINUX_VER":"ubuntu22.04","GPU":"l4","DRIVER":"latest","DEPENDENCIES":"latest"},
+        {"ARCH":"amd64","PY_VER":"3.10","CUDA_VER":"11.8.0","LINUX_VER":"ubuntu22.04","GPU":"rtx4090","DRIVER":"latest","DEPENDENCIES":"latest"},
+        {"ARCH":"amd64","PY_VER":"3.10","CUDA_VER":"11.8.0","LINUX_VER":"ubuntu22.04","GPU":"h100","DRIVER":"latest","DEPENDENCIES":"latest"},
+        {"ARCH":"amd64","PY_VER":"3.10","CUDA_VER":"11.8.0","LINUX_VER":"ubuntu22.04","GPU":"rtxa6000","DRIVER":"latest","DEPENDENCIES":"latest"},
+        {"ARCH":"amd64","PY_VER":"3.10","CUDA_VER":"11.8.0","LINUX_VER":"ubuntu22.04","GPU":"t4","DRIVER":"latest","DEPENDENCIES":"latest"},
+        {"ARCH":"amd64","PY_VER":"3.10","CUDA_VER":"11.8.0","LINUX_VER":"ubuntu22.04","GPU":"a100","DRIVER":"latest","DEPENDENCIES":"latest"}
+      ]'
   python-tests:
     secrets: inherit
-    uses: rapidsai/shared-workflows/.github/workflows/conda-python-tests.yaml@branch-24.12
+    uses: rapidsai/shared-workflows/.github/workflows/conda-python-tests.yaml@test-nvks-runners
     with:
       build_type: nightly
       branch: ${{ inputs.branch }}
       date: ${{ inputs.date }}
       sha: ${{ inputs.sha }}
+      run_codecov: false
+      matrix_filter: '. |= [
+        {"ARCH":"amd64","PY_VER":"3.10","CUDA_VER":"11.8.0","LINUX_VER":"ubuntu22.04","GPU":"l4","DRIVER":"latest","DEPENDENCIES":"latest"},
+        {"ARCH":"amd64","PY_VER":"3.10","CUDA_VER":"11.8.0","LINUX_VER":"ubuntu22.04","GPU":"rtx4090","DRIVER":"latest","DEPENDENCIES":"latest"},
+        {"ARCH":"amd64","PY_VER":"3.10","CUDA_VER":"11.8.0","LINUX_VER":"ubuntu22.04","GPU":"h100","DRIVER":"latest","DEPENDENCIES":"latest"},
+        {"ARCH":"amd64","PY_VER":"3.10","CUDA_VER":"11.8.0","LINUX_VER":"ubuntu22.04","GPU":"rtxa6000","DRIVER":"latest","DEPENDENCIES":"latest"},
+        {"ARCH":"amd64","PY_VER":"3.10","CUDA_VER":"11.8.0","LINUX_VER":"ubuntu22.04","GPU":"t4","DRIVER":"latest","DEPENDENCIES":"latest"},
+        {"ARCH":"amd64","PY_VER":"3.10","CUDA_VER":"11.8.0","LINUX_VER":"ubuntu22.04","GPU":"a100","DRIVER":"latest","DEPENDENCIES":"latest"}
+      ]'
   wheel-tests:
     secrets: inherit
-    uses: rapidsai/shared-workflows/.github/workflows/wheels-test.yaml@branch-24.12
+    uses: rapidsai/shared-workflows/.github/workflows/wheels-test.yaml@test-nvks-runners
     with:
       build_type: nightly
       branch: ${{ inputs.branch }}
       date: ${{ inputs.date }}
       sha: ${{ inputs.sha }}
       script: ci/test_wheel.sh
+      matrix_filter: '. |= [
+        {"ARCH":"amd64","PY_VER":"3.10","CUDA_VER":"11.8.0","LINUX_VER":"ubuntu22.04","GPU":"l4","DRIVER":"latest","DEPENDENCIES":"latest"},
+        {"ARCH":"amd64","PY_VER":"3.10","CUDA_VER":"11.8.0","LINUX_VER":"ubuntu22.04","GPU":"rtx4090","DRIVER":"latest","DEPENDENCIES":"latest"},
+        {"ARCH":"amd64","PY_VER":"3.10","CUDA_VER":"11.8.0","LINUX_VER":"ubuntu22.04","GPU":"h100","DRIVER":"latest","DEPENDENCIES":"latest"},
+        {"ARCH":"amd64","PY_VER":"3.10","CUDA_VER":"11.8.0","LINUX_VER":"ubuntu22.04","GPU":"rtxa6000","DRIVER":"latest","DEPENDENCIES":"latest"},
+        {"ARCH":"amd64","PY_VER":"3.10","CUDA_VER":"11.8.0","LINUX_VER":"ubuntu22.04","GPU":"t4","DRIVER":"latest","DEPENDENCIES":"latest"},
+        {"ARCH":"amd64","PY_VER":"3.10","CUDA_VER":"11.8.0","LINUX_VER":"ubuntu22.04","GPU":"a100","DRIVER":"latest","DEPENDENCIES":"latest"}
+      ]'
